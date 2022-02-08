@@ -342,11 +342,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\source\\repos\\WebApplication1\\FlightPlanner2\\FlightPlanner2.csproj",
+      "projectUniqueName": "C:\\Users\\User\\Desktop\\flight_planner\\FlightPlanner2\\FlightPlanner2.csproj",
       "projectName": "FlightPlanner2",
-      "projectPath": "C:\\Users\\User\\source\\repos\\WebApplication1\\FlightPlanner2\\FlightPlanner2.csproj",
+      "projectPath": "C:\\Users\\User\\Desktop\\flight_planner\\FlightPlanner2\\FlightPlanner2.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\source\\repos\\WebApplication1\\FlightPlanner2\\obj\\",
+      "outputPath": "C:\\Users\\User\\Desktop\\flight_planner\\FlightPlanner2\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
