@@ -1,11 +1,7 @@
 ﻿using FlightPlanner2.Models;
 using FlightPlanner2.Storage;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Net;
 
 namespace FlightPlanner2.Controllers
 {
