@@ -1,5 +1,4 @@
-﻿
-namespace FlightPlanner2.Models
+﻿namespace FlightPlanner2.Models
 {
     public class SearchFlightRequest
     {
