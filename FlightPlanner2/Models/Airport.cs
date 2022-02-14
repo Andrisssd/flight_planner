@@ -22,5 +22,10 @@ namespace FlightPlanner2.Models
                    !string.IsNullOrEmpty(City) &&
                    !string.IsNullOrEmpty(AirportName);
         }
+
+        public override string ToString()
+        {
+            return $"country: {this.Country}\ncity: {this.City}\nairport name: {this.AirportName}";
+        }
     }
 }

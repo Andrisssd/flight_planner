@@ -29,5 +29,10 @@
                    DepartureTime.Equals(otherFlight.DepartureTime) &&
                    ArrivalTime.Equals(otherFlight.ArrivalTime);
         }
+
+        public override string ToString()
+        {
+            return $"id: {this.Id}\ncarrier: {this.Carrier}\ndeparture time: {this.DepartureTime}\n arrival time: {this.ArrivalTime}\nfrom: {this.From.ToString()}\nto: {this.To.ToString()}";
+        }
     }
 }

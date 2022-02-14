@@ -17,7 +17,6 @@ namespace FlightPlanner2.Controllers
         public IActionResult GetAirports(string search)
         {
             var airportArray = FlightStorage.GetAirportByKeyword(search);
-
             return airportArray.Length == 0 ? Ok(search) : Ok(airportArray);
         }
 
@@ -33,7 +32,6 @@ namespace FlightPlanner2.Controllers
         [Route("flights/search/")]
         public IActionResult PostSearchFlights(SearchFlightRequest searchFlightRequest)
         {
-
             if (searchFlightRequest.From == searchFlightRequest.To)
             {
                 return BadRequest();

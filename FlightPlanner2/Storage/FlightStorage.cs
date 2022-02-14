@@ -9,21 +9,28 @@ namespace FlightPlanner2.Storage
     {
         private static List<Flight> _flights= new List<Flight>();
         private static int _id = 0;
-        private static readonly object obj = new object();
+        public static readonly object _lock = new object();
 
         public static Flight GetById(int id)
         {
-            lock (obj)
+            lock (_lock)
             {
-                return _flights.SingleOrDefault(flight => flight.Id == id);
+                try
+                {
+                    return _flights.SingleOrDefault(flight => flight.Id == id);
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
             }
         }
 
         public static Airport[] GetAirportByKeyword(string keyword)
         {
-            lock (obj)
+            lock (_lock)
             {
-                var cleanKeyword = keyword.Replace(" ", "").ToUpper();
+                var cleanKeyword = keyword.Trim().ToUpper();
                 var airports = _flights
                     .Select(a => a.From)
                     .Where(a => a.AirportName.ToUpper().StartsWith(cleanKeyword) ||
@@ -36,15 +43,16 @@ namespace FlightPlanner2.Storage
 
         public static void ClearFlights()
         {
-            lock (obj)
+            lock (_lock)
             {
                 _flights.Clear();
+                _id = 0;
             }
         }
 
         public static Flight AddFlight(Flight flight)
         {
-            lock (obj)
+            lock (_lock)
             {
                 flight.Id = ++_id;
                 _flights.Add(flight);
@@ -54,20 +62,23 @@ namespace FlightPlanner2.Storage
 
         public static bool IsDuplicate(Flight flight)
         {
-            lock (obj)
+            lock (_lock)
             {
                 if (_flights.Count() == 0)
                 {
                     return false;
                 }
 
-                return _flights.ToArray().Last().Equals(flight);
+                var e = _flights.Last();
+                //return _flights.ToArray().Last().Equals(flight);
+                return _flights.Where(f => f.Equals(flight)).Count() > 0;
+               
             }
         }
 
         public static bool IsValid(Flight flight)
         {
-            lock (obj)
+            lock (_lock)
             {
                 return flight != null && flight.IsValid();
             }
@@ -75,7 +86,7 @@ namespace FlightPlanner2.Storage
 
         public static bool IsValidTimeframe(Flight flight)
         {
-            lock (obj)
+            lock (_lock)
             {
                 var departureTime = DateTime.Parse(flight.DepartureTime);
                 var arrivalTime = DateTime.Parse(flight.ArrivalTime);
@@ -86,7 +97,7 @@ namespace FlightPlanner2.Storage
 
         public static void DeleteFlight(int id)
         {
-            lock (obj)
+            lock (_lock)
             {
                 var flight = GetById(id);
                 _flights.Remove(flight);
@@ -95,7 +106,7 @@ namespace FlightPlanner2.Storage
 
         public static SearchFlightResult SearchByParams(string from, string to, string date)
         {
-            lock (obj)
+            lock (_lock)
             {
                 var filteredFlight = _flights.Where(f => f.From.AirportName == from || f.To.AirportName == to || f.DepartureTime == date).ToArray();
 

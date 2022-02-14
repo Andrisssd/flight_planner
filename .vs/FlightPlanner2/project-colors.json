@@ -5,6 +5,11 @@
       "ProjectGuid": "b8aa1d39-8c79-47ba-bb80-845691a5a82a",
       "DisplayName": "FlightPlanner2",
       "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
     }
   },
   "NextColorIndex": 1

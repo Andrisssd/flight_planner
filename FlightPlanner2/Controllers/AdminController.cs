@@ -3,6 +3,7 @@ using FlightPlanner2.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Net;
 
@@ -12,14 +13,12 @@ namespace FlightPlanner2.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly object storage = new object();
-
         [Authorize]
         [HttpGet]
         [Route("flights/{id}")]
         public IActionResult GetFlights(int id)
         {
-            lock (storage)
+            lock (FlightStorage._lock)
             {
                 Flight flight = FlightStorage.GetById(id);
                 if (flight != null)
@@ -36,7 +35,7 @@ namespace FlightPlanner2.Controllers
         [Route("flights")]
         public IActionResult PutFlight(Flight flight)
         {
-            lock (storage)
+            lock (FlightStorage._lock)
             {
                 if (FlightStorage.IsDuplicate(flight))
                 {
@@ -58,7 +57,7 @@ namespace FlightPlanner2.Controllers
         [Route("flights/{id}")]
         public IActionResult DeleteFlight(int id)
         {
-            lock (storage)
+            lock (FlightStorage._lock)
             {
                 FlightStorage.DeleteFlight(id);
                 return Ok();
