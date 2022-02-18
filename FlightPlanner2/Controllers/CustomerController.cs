@@ -1,13 +1,16 @@
 ﻿using FlightPlanner2.Models;
 using FlightPlanner2.Storage;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner2.Controllers
 {
+    [EnableCors]
     [Route("api")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
+        [EnableCors]
         [HttpGet]
         [Route("airports")]
         public IActionResult GetAirports(string search)
@@ -16,6 +19,7 @@ namespace FlightPlanner2.Controllers
             return airportArray.Length == 0 ? Ok(search) : Ok(airportArray);
         }
 
+        [EnableCors]
         [HttpGet]
         [Route("flights/{id}")]
         public IActionResult GetFlight(int id)
@@ -24,6 +28,7 @@ namespace FlightPlanner2.Controllers
             return flight == null ? NotFound() : Ok(flight);
         }
 
+        [EnableCors]
         [HttpPost]
         [Route("flights/search/")]
         public IActionResult PostSearchFlights(SearchFlightRequest searchFlightRequest)

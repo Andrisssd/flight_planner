@@ -1,14 +1,17 @@
 ﻿using FlightPlanner2.Models;
 using FlightPlanner2.Storage;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlightPlanner2.Controllers
 {
+    [EnableCors]
     [Route("admin-api")]
     [ApiController]
     public class AdminController : ControllerBase
     {
+        [EnableCors]
         [Authorize]
         [HttpGet]
         [Route("flights/{id}")]
@@ -26,6 +29,7 @@ namespace FlightPlanner2.Controllers
             }
         }
 
+        [EnableCors]
         [Authorize]
         [HttpPut]
         [Route("flights")]
@@ -48,6 +52,7 @@ namespace FlightPlanner2.Controllers
             }
         }
 
+        [EnableCors]
         [Authorize]
         [HttpDelete]
         [Route("flights/{id}")]
