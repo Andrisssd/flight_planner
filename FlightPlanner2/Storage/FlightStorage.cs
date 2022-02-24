@@ -8,6 +8,7 @@ namespace FlightPlanner2.Storage
     public class FlightStorage
     {
         private static List<Flight> _flights= new List<Flight>();
+        private static readonly FlightPlannerDBContext _context = new FlightPlannerDBContext();
         private static int _id = 0;
         public static readonly object _lock = new object();
 
@@ -24,6 +25,20 @@ namespace FlightPlanner2.Storage
                     return null;
                 }
             }
+        }
+
+        public static Flight ConvertRequestToFlight(AddFlightRequest request)
+        {
+            Flight flight = new Flight
+            {
+                ArrivalTime = request.ArrivalTime,
+                DepartureTime = request.Departuretime,
+                Carrier = request.Carrier,
+                From = request.From,
+                To = request.To,
+            };
+
+            return flight;
         }
 
         public static Airport[] GetAirportByKeyword(string keyword)
@@ -71,7 +86,7 @@ namespace FlightPlanner2.Storage
 
                 var e = _flights.Last();
                 //return _flights.ToArray().Last().Equals(flight);
-                return _flights.Where(f => f.Equals(flight)).Count() > 0;
+                return _context.Flights.Where(f => f.Equals(flight)).Count() > 0;
                
             }
         }

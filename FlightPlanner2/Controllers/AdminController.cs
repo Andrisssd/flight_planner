@@ -3,6 +3,9 @@ using FlightPlanner2.Storage;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FlightPlanner2.Controllers
 {
@@ -11,6 +14,13 @@ namespace FlightPlanner2.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
+        private readonly FlightPlannerDBContext _context;
+
+        public AdminController(FlightPlannerDBContext context)
+        {
+            _context = context;
+        }
+
         [EnableCors]
         [Authorize]
         [HttpGet]
@@ -19,7 +29,10 @@ namespace FlightPlanner2.Controllers
         {
             lock (FlightStorage._lock)
             {
-                Flight flight = FlightStorage.GetById(id);
+                var flight = _context.Flights
+                    .Include(f => f.To)
+                    .Include(f => f.From)
+                    .SingleOrDefault(f => f.Id == id);
                 if (flight != null)
                 {
                     return Ok(flight);
@@ -33,10 +46,11 @@ namespace FlightPlanner2.Controllers
         [Authorize]
         [HttpPut]
         [Route("flights")]
-        public IActionResult PutFlight(Flight flight)
+        public IActionResult PutFlight(AddFlightRequest request)
         {
             lock (FlightStorage._lock)
             {
+                var flight = FlightStorage.ConvertRequestToFlight(request);
                 if (FlightStorage.IsDuplicate(flight))
                 {
                     return Conflict();
@@ -47,7 +61,8 @@ namespace FlightPlanner2.Controllers
                     return BadRequest();
                 }
 
-                FlightStorage.AddFlight(flight);
+                _context.Flights.Add(flight);
+                _context.SaveChanges();
                 return Created("", flight);
             }
         }

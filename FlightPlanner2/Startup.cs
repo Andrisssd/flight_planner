@@ -1,4 +1,5 @@
 using FlightPlanner2.Handler;
+using FlightPlanner2.Storage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,9 @@ namespace FlightPlanner2
             services.AddControllers();
             services.AddAuthentication("BasicAuthentication")
            .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+            services.AddDbContext<FlightPlannerDBContext>(ServiceLifetime.Scoped);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FlightPlanner2", Version = "v1" });
