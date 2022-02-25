@@ -22,6 +22,8 @@ namespace FlightPlanner2.Controllers
         public IActionResult Clear()
         {
             _context.Flights.RemoveRange(_context.Flights);
+            _context.Airports.RemoveRange(_context.Airports);
+            _context.SaveChanges();
             return Ok();
         }
     }

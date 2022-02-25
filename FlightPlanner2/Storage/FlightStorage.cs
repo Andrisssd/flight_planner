@@ -8,7 +8,6 @@ namespace FlightPlanner2.Storage
     public class FlightStorage
     {
         private static List<Flight> _flights= new List<Flight>();
-        private static readonly FlightPlannerDBContext _context = new FlightPlannerDBContext();
         private static int _id = 0;
         public static readonly object _lock = new object();
 
@@ -32,21 +31,24 @@ namespace FlightPlanner2.Storage
             Flight flight = new Flight
             {
                 ArrivalTime = request.ArrivalTime,
-                DepartureTime = request.Departuretime,
+                DepartureTime = request.DepartureTime,
                 Carrier = request.Carrier,
                 From = request.From,
                 To = request.To,
             };
 
+            Console.WriteLine(request.From);
+            Console.WriteLine(request.To);
+
             return flight;
         }
 
-        public static Airport[] GetAirportByKeyword(string keyword)
+        public static Airport[] GetAirportByKeyword(string keyword, FlightPlannerDBContext _context)
         {
-            lock (_lock)
+            lock (FlightStorage._lock)
             {
                 var cleanKeyword = keyword.Trim().ToUpper();
-                var airports = _flights
+                var airports = _context.Flights
                     .Select(a => a.From)
                     .Where(a => a.AirportName.ToUpper().StartsWith(cleanKeyword) ||
                                 a.City.ToUpper().StartsWith(cleanKeyword) ||
@@ -86,7 +88,7 @@ namespace FlightPlanner2.Storage
 
                 var e = _flights.Last();
                 //return _flights.ToArray().Last().Equals(flight);
-                return _context.Flights.Where(f => f.Equals(flight)).Count() > 0;
+                return _flights.Where(f => f.Equals(flight)).Count() > 0;
                
             }
         }
@@ -119,11 +121,11 @@ namespace FlightPlanner2.Storage
             }
         }
 
-        public static SearchFlightResult SearchByParams(string from, string to, string date)
+        public static SearchFlightResult SearchByParams(string from, string to, string date, FlightPlannerDBContext _context)
         {
             lock (_lock)
             {
-                var filteredFlight = _flights.Where(f => f.From.AirportName == from || f.To.AirportName == to || f.DepartureTime == date).ToArray();
+                var filteredFlight = _context.Flights.Where(f => f.From.AirportName == from || f.To.AirportName == to || f.DepartureTime == date).ToArray();
 
                 return new SearchFlightResult(filteredFlight);
             }
