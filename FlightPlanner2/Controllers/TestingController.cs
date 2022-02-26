@@ -21,10 +21,13 @@ namespace FlightPlanner2.Controllers
         [Route("clear")]
         public IActionResult Clear()
         {
-            _context.Flights.RemoveRange(_context.Flights);
-            _context.Airports.RemoveRange(_context.Airports);
-            _context.SaveChanges();
-            return Ok();
+            lock (FlightStorage._lock)
+            {
+                _context.Flights.RemoveRange(_context.Flights);
+                _context.Airports.RemoveRange(_context.Airports);
+                _context.SaveChanges();
+                return Ok();
+            }
         }
     }
 }

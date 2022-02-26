@@ -1,4 +1,5 @@
 ﻿using FlightPlanner2.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,18 +12,23 @@ namespace FlightPlanner2.Storage
         private static int _id = 0;
         public static readonly object _lock = new object();
 
-        public static Flight GetById(int id)
+        public static bool IsDublicate(AddFlightRequest request, FlightPlannerDBContext context)
         {
-            lock (_lock)
+            lock (FlightStorage._lock)
             {
-                try
+                foreach (var flight in context.Flights.Include(f => f.To).Include(f => f.From))
                 {
-                    return _flights.SingleOrDefault(flight => flight.Id == id);
+                    if (flight.ArrivalTime == request.ArrivalTime &&
+                        flight.Carrier == request.Carrier &&
+                        flight.DepartureTime == request.DepartureTime &&
+                        flight.From.AirportName.Trim().ToLower() == request.From.AirportName.Trim().ToLower() &&
+                        flight.To.AirportName.Trim().ToLower() == request.To.AirportName.Trim().ToLower())
+                    {
+                        return true;
+                    }
                 }
-                catch (Exception e)
-                {
-                    return null;
-                }
+
+                return false;
             }
         }
 
@@ -36,10 +42,6 @@ namespace FlightPlanner2.Storage
                 From = request.From,
                 To = request.To,
             };
-
-            Console.WriteLine(request.From);
-            Console.WriteLine(request.To);
-
             return flight;
         }
 
@@ -55,41 +57,6 @@ namespace FlightPlanner2.Storage
                                 a.Country.ToUpper().StartsWith(cleanKeyword));
 
                 return airports.ToArray();
-            }
-        }
-
-        public static void ClearFlights()
-        {
-            lock (_lock)
-            {
-                _flights.Clear();
-                _id = 0;
-            }
-        }
-
-        public static Flight AddFlight(Flight flight)
-        {
-            lock (_lock)
-            {
-                flight.Id = ++_id;
-                _flights.Add(flight);
-                return flight;
-            }
-        }
-
-        public static bool IsDuplicate(Flight flight)
-        {
-            lock (_lock)
-            {
-                if (_flights.Count() == 0)
-                {
-                    return false;
-                }
-
-                var e = _flights.Last();
-                //return _flights.ToArray().Last().Equals(flight);
-                return _flights.Where(f => f.Equals(flight)).Count() > 0;
-               
             }
         }
 
@@ -109,15 +76,6 @@ namespace FlightPlanner2.Storage
                 var arrivalTime = DateTime.Parse(flight.ArrivalTime);
 
                 return departureTime < arrivalTime;
-            }
-        }
-
-        public static void DeleteFlight(int id)
-        {
-            lock (_lock)
-            {
-                var flight = GetById(id);
-                _flights.Remove(flight);
             }
         }
 

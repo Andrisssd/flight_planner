@@ -52,7 +52,7 @@ namespace FlightPlanner2.Controllers
             {
                 var flight = FlightStorage.ConvertRequestToFlight(request);
 
-                if (IsDublicate(request))
+                if (FlightStorage.IsDublicate(request, _context))
                 {
                     return Conflict();
                 }
@@ -89,26 +89,6 @@ namespace FlightPlanner2.Controllers
                 _context.Flights.Remove(flight);
                 _context.SaveChanges();
                 return Ok();
-            }
-        }
-
-        private bool IsDublicate(AddFlightRequest request)
-        {
-            lock (FlightStorage._lock)
-            {
-                foreach (var flight in _context.Flights.Include(f=> f.To).Include(f=>f.From))
-                {
-                    if (flight.ArrivalTime == request.ArrivalTime &&
-                        flight.Carrier == request.Carrier &&
-                        flight.DepartureTime == request.DepartureTime &&
-                        flight.From.AirportName.Trim().ToLower() == request.From.AirportName.Trim().ToLower() &&
-                        flight.To.AirportName.Trim().ToLower() == request.To.AirportName.Trim().ToLower())
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
             }
         }
     }
