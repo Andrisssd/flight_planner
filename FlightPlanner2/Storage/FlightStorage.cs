@@ -8,21 +8,16 @@ namespace FlightPlanner2.Storage
 {
     public class FlightStorage
     {
-        private static List<Flight> _flights= new List<Flight>();
-        private static int _id = 0;
         public static readonly object _lock = new object();
 
         public static bool IsDublicate(AddFlightRequest request, FlightPlannerDBContext context)
         {
             lock (FlightStorage._lock)
             {
+                var currentFlight = ConvertRequestToFlight(request);
                 foreach (var flight in context.Flights.Include(f => f.To).Include(f => f.From))
                 {
-                    if (flight.ArrivalTime == request.ArrivalTime &&
-                        flight.Carrier == request.Carrier &&
-                        flight.DepartureTime == request.DepartureTime &&
-                        flight.From.AirportName.Trim().ToLower() == request.From.AirportName.Trim().ToLower() &&
-                        flight.To.AirportName.Trim().ToLower() == request.To.AirportName.Trim().ToLower())
+                    if (flight.Equals(currentFlight))
                     {
                         return true;
                     }
@@ -34,20 +29,23 @@ namespace FlightPlanner2.Storage
 
         public static Flight ConvertRequestToFlight(AddFlightRequest request)
         {
-            Flight flight = new Flight
+            lock (_lock)
             {
-                ArrivalTime = request.ArrivalTime,
-                DepartureTime = request.DepartureTime,
-                Carrier = request.Carrier,
-                From = request.From,
-                To = request.To,
-            };
-            return flight;
+                Flight flight = new Flight
+                {
+                    ArrivalTime = request.ArrivalTime,
+                    DepartureTime = request.DepartureTime,
+                    Carrier = request.Carrier,
+                    From = request.From,
+                    To = request.To,
+                };
+                return flight;
+            }
         }
 
         public static Airport[] GetAirportByKeyword(string keyword, FlightPlannerDBContext _context)
         {
-            lock (FlightStorage._lock)
+            lock (_lock)
             {
                 var cleanKeyword = keyword.Trim().ToUpper();
                 var airports = _context.Flights
